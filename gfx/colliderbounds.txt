@@ -1,0 +1,6 @@
+colliderbounds.png
+true
+; This file is used to set the player collision bounds.
+; As image. will get the Width and Height.
+; Will get the Width and Height as Collision Bounds.
+; And will get the White Pixel(255,255,255 as Image Origin)

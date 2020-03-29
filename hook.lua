@@ -1,32 +1,36 @@
-local hook = {links = {}}
+hook = {links = {}} -- Starts a Hook
 
-function hook.add(hookname,id,func)
-    hook.links[hookname] = hook.links[hookname] or {} 
-    hook.links[hookname][id] = func
-    if hook.links[hookname][id] then
-        return hook.links[hookname]
-    end
+
+function hook.CreateBS(hookname)
+	if hook.links[hookname] == nil then hook.links[hookname] = {} end
+end
+function hook.Add(hookname,id,funct) -- Add a Hook
+	hook.CreateBS(hookname)
+	hook.links[hookname][id] = funct 
 end
 
-function hook.remove(hookname,id)
-    local savedfunc = hook.links[hookname][id]
-    hook.links[hookname][id]
-    
-    return savedfunc    
+function hook.Run(hookname,priority,...)
+	hook.CreateBS(hookname)
+	local returnvalues = {}
+	for id,_ in ipairs(hook.links[hookname]) do 
+		if IsValid(hook.links[hookname][id]) then
+			returnvalues[#returnvalues+1] = hook.links[hookname][id](...)
+		end
+	end
+	return returnvalues,hook.test_priority(returnvalues,priority)
 end
 
+function hook.Remove(hookname,id)
+	hook.links[hookname][id] = nil
+end
 
-function hook.run(hookname,returnablefunc,...)
-  local varargs = {}
-  local function addtovarargs(packed)
-    varargs[#varargs+1] = packed
-  end
-  for i,v in ipairs(hook.links[hookname]) do
-    varargs = table.pack(hook.links[hookname][i](...))
-  end
-  if not returnablefunc == nil then
-  returnablefunc(table.unpack(varargs))
-  else
-    return varargs
-  end
- end
+-- It is like table.match
+-- If the table have the value: (priority)
+-- Will call a function
+function hook.test_priority(tabley,priority)
+	for i,v in pairs(tabley) do 
+		if v == priority then
+			return true
+		end
+	end
+end
